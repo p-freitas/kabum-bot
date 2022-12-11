@@ -141,7 +141,10 @@ class Kabum {
         });
 
         var emailASerEnviado = {
-          from: "bot@gmail.com",
+          from: {
+            name: "Promoção da RTX 2060 encontrada!",
+            address: "bot@gmail.com"
+          },
           to: process.env["EMAILTO"],
           subject: "Promoção da RTX 2060 encontrada!",
           text: `Nome da placa: ${cheapestPrice.name}\nPreço da placa: R$ ${cheapestPrice.price}`,
