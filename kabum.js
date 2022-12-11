@@ -7,6 +7,8 @@ require("dotenv").config({ path: __dirname + "/.env" });
 const url_kabum =
   "https://www.kabum.com.br/busca/RTX-2060?page_number=1&page_size=100&facet_filters=&sort=price";
 
+let itemPrice = "";
+
 class Kabum {
   constructor(page, browser) {
     this.page = page;
@@ -126,12 +128,6 @@ class Kabum {
       );
 
       if (parseFloat(localStorage.price) > itemPrice) {
-        this.page.evaluate((itemPrice) => {
-          localStorage.setItem("price", itemPrice);
-        }, itemPrice);
-      }
-
-      if (cheapestPrice.price < parseFloat(localStorage.price)) {
         console.log("Promoção encontrada!!");
         console.log("Nome da placa: ", cheapestPrice.name);
         console.log("Valor da placa: ", cheapestPrice.price);
@@ -158,6 +154,10 @@ class Kabum {
             console.log("Email enviado com sucesso.");
           }
         });
+
+        await this.page.evaluate((itemPrice) => {
+          localStorage.setItem("price", itemPrice);
+        }, itemPrice);
       }
     } catch (err) {
       console.log(
