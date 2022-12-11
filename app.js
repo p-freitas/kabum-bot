@@ -5,7 +5,7 @@ var card = [];
 
 const tracked_words = ["RTX 2060"];
 
-iniciarBrowser = async (text_search, selected_word) => {
+iniciarBrowser = async (text_search) => {
   const browser = await puppeteer.launch({
     product: "chrome",
     // headless: true,
@@ -43,4 +43,4 @@ console.log(
   "[BEGIN] APLICAÇÃO INICIADA. PROCURANDO POR PROMOÇÕES DAS GPU RTX 2060..."
 );
 
-iniciarBrowser("RTX 2060", tracked_words[0]);
+iniciarBrowser("RTX 2060");
