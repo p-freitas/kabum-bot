@@ -1,9 +1,11 @@
 const cookiesFilePath = "./cookies.json";
 const jsonfile = require("jsonfile");
 const fileExists = require("./existsSync");
+var nodemailer = require("nodemailer");
+require("dotenv").config({ path: __dirname + "/.env" });
 
 const url_kabum =
-  "https://www.kabum.com.br/busca/RTX-2060?page_number=1&page_size=50&facet_filters=&sort=price";
+  "https://www.kabum.com.br/busca/RTX-2060?page_number=1&page_size=100&facet_filters=&sort=price";
 
 class Kabum {
   constructor(page, browser) {
@@ -90,14 +92,16 @@ class Kabum {
       for (let index = 0; index < list.length; index++) {
         const element = list[index];
 
-        card.push({
-          name: element[0],
-          price: parseFloat(
-            element[1]
-              ?.replace(/[^0-9\.]+/g, "")
-              .substring(0, element[1]?.length - 6)
-          ),
-        });
+        if (element) {
+          card.push({
+            name: element[0],
+            price: parseFloat(
+              element[1]
+                ?.replace(/[^0-9\.]+/g, "")
+                .substring(0, element[1]?.length - 6)
+            ),
+          });
+        }
       }
 
       let itemPrice = "";
@@ -115,11 +119,13 @@ class Kabum {
       console.log(`Nome: ${cheapestPrice.name}`);
       console.log(`Preço: R$ ${cheapestPrice.price}`);
       console.log(
-        `_____________________________________________________________________________________________`
+        `Horário da busca: ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
+      );
+      console.log(
+        `________________________________________________________________________________`
       );
 
       if (parseFloat(localStorage.price) > itemPrice) {
-        console.log("adsasd");
         this.page.evaluate((itemPrice) => {
           localStorage.setItem("price", itemPrice);
         }, itemPrice);
@@ -130,9 +136,28 @@ class Kabum {
         console.log("Nome da placa: ", cheapestPrice.name);
         console.log("Valor da placa: ", cheapestPrice.price);
 
-        await this.page.evaluate(() =>
-          window.open("https://www.youtube.com/watch?v=jNM4M3OSLE0")
-        );
+        var remetente = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env["EMAIL"],
+            pass: process.env["PASSWORD"],
+          },
+        });
+
+        var emailASerEnviado = {
+          from: "bot@gmail.com",
+          to: process.env["EMAILTO"],
+          subject: "Promoção da RTX 2060 encontrada!",
+          text: `Nome da placa: ${cheapestPrice.name}\nPreço da placa: R$ ${cheapestPrice.price}`,
+        };
+
+        remetente.sendMail(emailASerEnviado, function (error) {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("Email enviado com sucesso.");
+          }
+        });
       }
     } catch (err) {
       console.log(

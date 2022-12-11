@@ -8,8 +8,17 @@ const tracked_words = ["RTX 2060"];
 iniciarBrowser = async (text_search, selected_word) => {
   const browser = await puppeteer.launch({
     product: "chrome",
-    headless: false,
+    // headless: true,
     userDataDir: "/tmp/myChromeSession",
+    headless: true,
+    devtools: true,
+    args: [
+      "--ignore-certificate-errors",
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-accelerated-2d-canvas",
+      "--disable-gpu",
+    ],
   });
   const page = await browser.newPage();
 
@@ -27,7 +36,7 @@ iniciarBrowser = async (text_search, selected_word) => {
     await kabum.check_price(text_search, card);
   }
   fn60sec();
-  setInterval(fn60sec, 60 * 1000);
+  setInterval(fn60sec, 60*5000);
 };
 
 console.log(
